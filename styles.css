@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --bg: #fff;
   --paper: #fff;
   --ink: #201f1d;
@@ -10,6 +10,27 @@
   --lucid-pink: #f263be;
   --blue: #5bbec4;
   --shadow: 0 22px 50px rgba(32, 31, 29, 0.12);
+  --on-accent: rgba(32, 31, 29, 0.82);
+  --now-bg: #e9f8f6;
+  --now-line: #b4dcda;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131210;
+    --paper: #1d1b18;
+    --ink: #f4efe6;
+    --muted: #aaa198;
+    --line: #39332d;
+    --lime: #c9f03a;
+    --coral: #ff866f;
+    --lucid-pink: #ff7ac9;
+    --blue: #70d3d8;
+    --shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
+    --on-accent: rgba(32, 31, 29, 0.86);
+    --now-bg: #173332;
+    --now-line: #2d6866;
+  }
 }
 
 * {
@@ -23,6 +44,7 @@ html {
 }
 
 body {
+  background: var(--bg);
   margin: 0;
   overflow-x: hidden;
 }
@@ -322,7 +344,7 @@ p {
 
 .text-only-card.accent p,
 .text-only-card.accent .eyebrow {
-  color: rgba(32, 31, 29, 0.82);
+  color: var(--on-accent);
 }
 
 .wide-card-image {
@@ -457,8 +479,8 @@ p {
 }
 
 .now-main {
-  background: #e9f8f6;
-  border-color: #b4dcda;
+  background: var(--now-bg);
+  border-color: var(--now-line);
 }
 
 .site-footer {
