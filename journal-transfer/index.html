@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Day One to Apple Journal Import | Brian King</title>
+    <meta name="description" content="A brief breakdown of a Day One to Apple Journal migration using Python, Apple Shortcuts, batched folders, media handling, and reconciliation reports.">
+    <link rel="canonical" href="https://brianking.org/journal-transfer/">
+    <meta property="og:title" content="Day One to Apple Journal Import">
+    <meta property="og:description" content="How a Day One export became a repeatable Apple Journal import workflow.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://brianking.org/journal-transfer/">
+    <meta property="og:site_name" content="Brian King">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Day One to Apple Journal Import">
+    <meta name="twitter:description" content="How a Day One export became a repeatable Apple Journal import workflow.">
+    <link rel="stylesheet" href="/styles.css?v=6">
+    <style>
+      .article-body {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(220px, 0.6fr) minmax(0, 1.4fr);
+      }
+
+      .article-card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: clamp(22px, 4vw, 44px);
+      }
+
+      .article-card.accent {
+        background: var(--now-bg);
+        border-color: var(--now-line);
+      }
+
+      .article-card ol,
+      .article-card ul {
+        color: var(--muted);
+        font-size: clamp(1rem, 1.25vw, 1.16rem);
+        line-height: 1.65;
+        margin: 0 0 18px;
+        padding-left: 1.2em;
+      }
+
+      .article-card li {
+        margin-bottom: 10px;
+      }
+
+      .stat-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .stat {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: clamp(1.8rem, 4vw, 3.3rem);
+        line-height: 1;
+      }
+
+      .code-name {
+        color: var(--ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 0.95em;
+      }
+
+      @media (max-width: 920px) {
+        .article-body {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .article-body,
+        .article-card {
+          max-width: min(calc(100vw - 40px), 350px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="/">Brian King</a>
+      <nav aria-label="Primary navigation">
+        <a href="/luminar/">Luminar</a>
+        <a href="/lucid-potato/">Lucid Potato</a>
+        <a href="/personal-work/">Personal Work</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <p class="kicker">Personal automation</p>
+        <h1>Day One to Apple Journal.</h1>
+        <p class="lede">A Day One JSON export became a repeatable Apple Journal import workflow using Python, a folder-based handoff format, and an Apple Shortcut.</p>
+      </section>
+
+      <section class="content article-body">
+        <aside class="article-card accent">
+          <h2>Import feed</h2>
+          <p>The generated feed was split into small, plain-file folders that Shortcuts could read without needing a custom app.</p>
+          <div class="stat-list">
+            <p class="stat"><strong>5,237</strong> journal entries</p>
+            <p class="stat"><strong>2,367</strong> media files</p>
+            <p class="stat"><strong>11</strong> import batches</p>
+          </div>
+          <p>Shortcut link can be added here once the iCloud URL is available.</p>
+        </aside>
+
+        <article class="article-card">
+          <h2>How it worked</h2>
+          <ol>
+            <li>Export Day One as JSON, including the media attachment folders.</li>
+            <li>Use a Python script to read each entry, preserve the original date and time zone, clean up Markdown, and match media back to the right journal entry.</li>
+            <li>Generate a Shortcut-friendly folder for each entry, with small control files for the body, heading, date, timestamp, and media.</li>
+            <li>Group those entry folders into batches of 500 so the import can be resumed or retried without starting over.</li>
+            <li>Run an Apple Shortcut that loops through one batch at a time, reads the files, attaches any media, and calls Apple Journal's Create Journal Entry action.</li>
+            <li>Export Apple Journal afterward and compare it against the generated source data to find missing entries, duplicates, and near-duplicates.</li>
+          </ol>
+
+          <h2>What was in each folder</h2>
+          <ul>
+            <li><span class="code-name">Body.txt</span> held the journal entry text.</li>
+            <li><span class="code-name">Heading.txt</span> held the entry title.</li>
+            <li><span class="code-name">Date.txt</span>, <span class="code-name">ISODate.txt</span>, and <span class="code-name">UnixTimestamp.txt</span> preserved the original date in formats Shortcuts could use.</li>
+            <li><span class="code-name">Media/</span> contained copied photos for that entry.</li>
+            <li><span class="code-name">NeedsAI.txt</span> and <span class="code-name">AIPrompt.txt</span> were helper files for entries that needed title cleanup.</li>
+          </ul>
+
+          <h2>Troubleshooting</h2>
+          <ul>
+            <li>Apple Journal does not have a normal bulk import tool, so the workflow had to go through Shortcuts.</li>
+            <li>One giant Shortcut run was unreliable, which is why the import was split into batches.</li>
+            <li>Day One stores image references in the entry text; those had to be removed from the body while keeping the real media attachments.</li>
+            <li>Some entries had long first lines, no clear title, or Markdown formatting, so titles needed a cleanup pass.</li>
+            <li>Date handling mattered because the entries needed to keep their original journal dates, not the date they were imported.</li>
+            <li>Media had to be copied into predictable locations so Shortcuts could attach it to the right entry.</li>
+            <li>The final reconciliation step exposed missing entries, duplicates, and near-duplicates that needed smaller recovery passes.</li>
+          </ul>
+
+          <p>The hard part was not converting the text. It was making the import repeatable, resumable, and verifiable.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>On the internet: <a href="https://instagram.com/bkbkbk">@bkbkbk</a> and, usually, @bkbkbk</p>
+    </footer>
+  </body>
+</html>
