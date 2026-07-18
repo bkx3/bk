@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="/styles.css?v=6">
     <style>
       .article-body {
-        display: grid;
-        gap: 18px;
-        grid-template-columns: minmax(220px, 0.6fr) minmax(0, 1.4fr);
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 980px;
       }
 
       .article-card {
@@ -27,11 +27,6 @@
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: clamp(22px, 4vw, 44px);
-      }
-
-      .article-card.accent {
-        background: var(--now-bg);
-        border-color: var(--now-line);
       }
 
       .article-card ol,
@@ -47,33 +42,10 @@
         margin-bottom: 10px;
       }
 
-      .stat-list {
-        display: grid;
-        gap: 12px;
-        margin-top: 18px;
-      }
-
-      .stat {
-        border-top: 1px solid var(--line);
-        padding-top: 12px;
-      }
-
-      .stat strong {
-        display: block;
-        font-size: clamp(1.8rem, 4vw, 3.3rem);
-        line-height: 1;
-      }
-
       .code-name {
         color: var(--ink);
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
         font-size: 0.95em;
-      }
-
-      @media (max-width: 920px) {
-        .article-body {
-          grid-template-columns: 1fr;
-        }
       }
 
       @media (max-width: 640px) {
@@ -102,17 +74,6 @@
       </section>
 
       <section class="content article-body">
-        <aside class="article-card accent">
-          <h2>Import feed</h2>
-          <p>The generated feed was split into small, plain-file folders that Shortcuts could read without needing a custom app.</p>
-          <div class="stat-list">
-            <p class="stat"><strong>5,237</strong> journal entries</p>
-            <p class="stat"><strong>2,367</strong> media files</p>
-            <p class="stat"><strong>11</strong> import batches</p>
-          </div>
-          <p>Shortcut link can be added here once the iCloud URL is available.</p>
-        </aside>
-
         <article class="article-card">
           <h2>How it worked</h2>
           <ol>
