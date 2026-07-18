@@ -11,16 +11,11 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from dayone_to_apple_journal_html import (
-    DEFAULT_EXPORT,
-    WORKSPACE,
-    source_photo_path,
-    strip_photo_markers,
-    weather_line,
-)
 
-
+WORKSPACE = Path.cwd()
+DEFAULT_EXPORT = WORKSPACE / "day-one-export"
 DEFAULT_OUTPUT = WORKSPACE / "shortcut-import-feed"
+PHOTO_MARKER_RE = re.compile(r"!\[[^\]]*\]\(dayone-moment://[A-Fa-f0-9-]+\)\s*")
 WHITESPACE_RE = re.compile(r"\s+")
 
 
@@ -44,6 +39,51 @@ def shortcuts_date_text(dt: datetime) -> str:
 
 def shortcuts_iso_date_text(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%d %H:%M:%S %z")
+
+
+def strip_photo_markers(text: str) -> str:
+    return PHOTO_MARKER_RE.sub("", text or "").strip()
+
+
+def source_photo_path(export_dir: Path, photo: dict) -> Path | None:
+    md5 = photo.get("md5")
+    if not md5:
+        return None
+    declared = (photo.get("type") or "jpeg").lower().replace("jpg", "jpeg")
+    candidates = [
+        export_dir / "photos" / f"{md5}.{declared}",
+        export_dir / "photos" / f"{md5}.jpeg",
+        export_dir / "photos" / f"{md5}.jpg",
+        export_dir / "photos" / f"{md5}.png",
+        export_dir / "photos" / f"{md5}.gif",
+        export_dir / "photos" / f"{md5}.heic",
+    ]
+    return next((path for path in candidates if path.exists()), None)
+
+
+def weather_line(entry: dict, dt: datetime) -> str | None:
+    weather = entry.get("weather") or {}
+    location = entry.get("location") or {}
+    if not weather:
+        return None
+    parts = []
+    conditions = weather.get("conditionsDescription")
+    temp = weather.get("temperatureCelsius")
+    humidity = weather.get("relativeHumidity")
+    wind = weather.get("windSpeedKPH")
+    place = location.get("placeName") or location.get("localityName") or "this location"
+    prefix = f"The weather at {place} on {dt.isoformat()} was"
+    if conditions:
+        parts.append(str(conditions).lower())
+    if temp is not None:
+        parts.append(f"with a temperature of {temp}°C")
+    if humidity is not None:
+        parts.append(f"relative humidity of {humidity}%")
+    if wind is not None:
+        parts.append(f"wind speed of {round(float(wind), 2)} kph")
+    if not parts:
+        return None
+    return prefix + " " + ", ".join(parts) + "."
 
 
 def word_count(text: str) -> int:
